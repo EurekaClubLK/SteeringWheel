@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    lblStatus.setText("Connecting");
+                    lblStatus.setText("Connecting...");
                     bluetoothHandler = BluetoothHandler.newConnection(devices[0]);
-                    lblStatus.setText("Connected");
+                    lblStatus.setText("Connected!");
                 } catch (IOException ex) {
                     Log.e("error", ex.getMessage(), ex);
                     lblStatus.setText(ex.getMessage());
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                         lblStatus.setText(text);
                     }
                     else
-                        lblStatus.setText("Not connected");
+                        lblStatus.setText("Not connected :/");
                 } catch (IOException ex) {
                     Log.e("error", ex.getMessage(), ex);
                     lblStatus.setText(ex.getMessage());
