@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.eurekaclublk.steeringwheel.MainActivity"
+    android:id="@+id/activity_main_coordinatorlayout"
+    android:layout_margin="16dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/activity_main_lblStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LEL"/>
-
     <Button
-        android:id="@+id/activity_main_btnConnect"
+        android:id="@+id/activity_main_btnSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect" />
+        android:text="@string/activity_main_btnSend"/>
 
-    <Button
-        android:id="@+id/activity_main_btnTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test" />
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

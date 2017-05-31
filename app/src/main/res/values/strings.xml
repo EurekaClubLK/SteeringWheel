@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">SteeringWheel</string>
+    <string name="app_name">Steering Wheel</string>
+
+    <string name="activity_main_btnSend">Send Test String</string>
+
+    <string name="activity_main_dialog_title">Connect</string>
+
+    <string name="activity_main_snackbar_connected">Connected</string>
+    <string name="activity_main_snackbar_sent">Sent %s</string>
+    <string name="activity_main_snackbar_notconnected">Not connected</string>
+
+    <string name="activity_main_error_title">Error</string>
+    <string name="activity_main_error_cannotconnect">Failed to connect</string>
+    <string name="activity_main_error_cannotwrite">Failed to send instruction</string>
+    <string name="activity_main_error_cannotdisconnect">Failed to safely disconnect</string>
 </resources>

@@ -22,10 +22,10 @@ class BluetoothHandler {
     private BufferedInputStream _socketIn;
     private PrintWriter _socketOut;
 
-    static void enableBluetooth(Activity context) {
+    static void enableBluetooth(Activity activity) {
         if (!isBluetoothEnabled()) {
             Intent bIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            context.startActivityForResult(bIntent, 0);
+            activity.startActivityForResult(bIntent, 0);
         }
     }
 
