@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
     //Class wide Variables
     private BluetoothHandler bluetoothHandler;
     float StartTilt = 0;
-    float Tilt = 1;
+    float Tilt = 0;
+    boolean Driving = false;
     //Class wide Variables
     /**
      * When the activity is first created (opened app from scratch).
@@ -92,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onPause() {
-        //Kill the Drviing
+        //Kill the Driving
         mSensorManager.unregisterListener(mSensorListener);
-        //Kill the Drviing
+        //Kill the Driving
         super.onPause();
         // disconnect from device before closing
         if (bluetoothHandler != null)
@@ -190,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
         float mRotationMatrixFromVector[] = new float[16];
         float mRotationMatrix[] = new float[16];
         float orientationVals[] = new float[3];
-
         //Place Holder Arrays
         public void onSensorChanged(SensorEvent se) {
             SensorManager.getRotationMatrixFromVector(mRotationMatrixFromVector, se.values);
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     mRotationMatrix);
             SensorManager.getOrientation(mRotationMatrix, orientationVals);
             if (StartTilt == 0){
-                StartTilt = (int)Math.toDegrees(orientationVals[2]);
+                StartTilt = (float)Math.toDegrees(orientationVals[2]);
             }
 
             Tilt = ((float)Math.toDegrees(orientationVals[2]) - StartTilt)/90; //Convert to Value between -1 & 1
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                 Tilt +=1;
             }*/
             //Send Tilt + Speed Value here
-            Log.d("Tilt", Float.toString(Tilt));
+            Log.d("Tilt", String.format("%.02f", Tilt));// String.format("%.02f", Tilt); <-- float to 2dp (think about required accuracy)
         }
 
         public void onAccuracyChanged(Sensor sensor, int accuracy) {

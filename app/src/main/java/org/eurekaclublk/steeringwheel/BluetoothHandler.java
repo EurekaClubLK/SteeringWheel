@@ -6,8 +6,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
@@ -32,7 +33,7 @@ class BluetoothHandler {
     private static final BluetoothAdapter BLUETOOTH_ADAPTER = BluetoothAdapter.getDefaultAdapter();
 
     private BluetoothSocket _socket;
-    private BufferedInputStream _socketIn;
+    private BufferedReader _socketIn;
     private PrintWriter _socketOut;
 
     /**
@@ -88,7 +89,7 @@ class BluetoothHandler {
         _socket = device.createRfcommSocketToServiceRecord(HC06_UUID);
         _socket.connect();
 
-        _socketIn = new BufferedInputStream(_socket.getInputStream());
+        _socketIn = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
         _socketOut = new PrintWriter(new BufferedOutputStream(_socket.getOutputStream()));
     }
 
@@ -125,6 +126,13 @@ class BluetoothHandler {
             _socketOut.write(text);
             _socketOut.flush();
         }
+    }
+
+    String readLine() throws IOException{
+        if (isConnected()) {
+            return _socketIn.readLine();
+        }
+        return "Dead.....DX";
     }
 
 }
