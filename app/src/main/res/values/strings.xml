@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Steering Wheel</string>
 
+    <string name="activity_main_tglBluetooth">Bluetooth</string>
     <string name="activity_main_btnSend">Send Test String</string>
 
     <string name="activity_main_dialog_title">Connect</string>

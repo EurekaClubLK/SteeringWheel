@@ -1,5 +1,6 @@
 package org.eurekaclublk.steeringwheel;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
@@ -12,17 +13,22 @@ import android.widget.Button;
 
 import java.io.IOException;
 
-import android.hardware.SensorEventListener;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.hardware.SensorEvent;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RotationSensorHandler.RotationListener {
 
     private BluetoothHandler _bluetoothHandler;
+    private RotationSensorHandler _rotationSensorHandler;
+
+    private Switch tglBluetooth;
+    private Button btnTest;
+    private TextView lblTilt;
 
     /**
      * When the activity is first created (opened app from scratch).
+     * Sets functionality of UI elements.
      *
      * @param savedInstanceState Any state to be restored for the appearance of continuity
      */
@@ -31,8 +37,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Activity self = this;
+
+        lblTilt = (TextView)findViewById(R.id.activity_main_lblTilt);
+        lblTilt.setText("?");
+
+        // toggle bluetooth
+        tglBluetooth = (Switch)findViewById(R.id.activity_main_tglBluetooth);
+        tglBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // redirect user to Bluetooth settings if functionality is off
+                    if (!BluetoothHandler.isBluetoothEnabled())
+                        BluetoothHandler.enableBluetooth(self);
+
+                    // show device selection dialog
+                    BluetoothDevice[] devices = BluetoothHandler.getPairedDevices();
+                    showBluetoothSelectionDialog(devices);
+                } else {
+                    // disconnect from device before closing
+                    if (_bluetoothHandler != null)
+                        if (_bluetoothHandler.isConnected())
+                            disconnectFromDevice();
+                    btnTest.setEnabled(false);
+                }
+            }
+        });
+
         // temporary button to send a string
-        Button btnTest = (Button)findViewById(R.id.activity_main_btnSend);
+        btnTest = (Button)findViewById(R.id.activity_main_btnSend);
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,35 +87,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * When the Activity is displayed (opened app from scratch or switched back from another app).
-     * Redirects to Bluetooth settings page if Bluetooth is not enabled.
-     * Displays dialog to select the paired device.
+     * When the Activity is first displayed (opened app from scratch or switch back from another app).
+     * Start listening for tilt readings.
      */
     @Override
     protected void onStart() {
         super.onStart();
 
-        // redirect user to Bluetooth settings if functionality is off
-        if (!BluetoothHandler.isBluetoothEnabled())
-            BluetoothHandler.enableBluetooth(this);
-
-        // show device selection dialog
-        BluetoothDevice[] devices = BluetoothHandler.getPairedDevices();
-        showBluetoothSelectionDialog(devices);
+        // start listening for tilt
+        _rotationSensorHandler = new RotationSensorHandler(this, this);
+        _rotationSensorHandler.startListening();
     }
 
     /**
      * When the Activity is removed from view (closed app or switched to another app).
-     * Forces disconnect from device.
+     * Forces disconnect from device. Stops listening for tilt readings.
      */
     @Override
     protected void onPause() {
         super.onPause();
 
+        // stop listening for tilt
+        if (_rotationSensorHandler != null)
+            _rotationSensorHandler.stopListening();
+
         // disconnect from device before closing
         if (_bluetoothHandler != null)
             if (_bluetoothHandler.isConnected())
                 disconnectFromDevice();
+
+        // UI
+        tglBluetooth.setChecked(false);
+        btnTest.setEnabled(false);
+    }
+
+    /**
+     * Called when a new tilt reading is obtained.
+     * Displays the value in a TextView.
+     *
+     * @param tilt Current tilt of device, normalised between -1 and +1
+     */
+    @Override
+    public void onTiltChanged(float tilt) {
+        lblTilt.setText(Float.toString(tilt));
     }
 
     /**
@@ -122,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             _bluetoothHandler = BluetoothHandler.newConnection(device);
             showSnackbar(R.string.activity_main_snackbar_connected);
+            btnTest.setEnabled(true);
         } catch (IOException ex) {
             showErrorDialog(R.string.activity_main_error_cannotconnect);
             Log.e("connectToDevice", ex.getMessage(), ex);
