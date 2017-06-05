@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SteeringWheelAndroid.iml" filepath="$PROJECT_DIR$/SteeringWheelAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SteeringWheel.iml" filepath="$PROJECT_DIR$/SteeringWheel.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
