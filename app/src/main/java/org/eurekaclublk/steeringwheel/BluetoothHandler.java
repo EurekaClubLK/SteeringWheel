@@ -27,7 +27,6 @@ class BluetoothHandler {
 
     // TODO authentication
     // TODO fixed format
-    // TODO input stream
 
     private static final UUID HC06_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final BluetoothAdapter BLUETOOTH_ADAPTER = BluetoothAdapter.getDefaultAdapter();

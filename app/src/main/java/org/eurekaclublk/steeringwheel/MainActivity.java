@@ -18,12 +18,9 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 
 public class MainActivity extends AppCompatActivity {
-    //Class wide Variables
-    private BluetoothHandler bluetoothHandler;
-    float StartTilt = 0;
-    float Tilt = 0;
-    boolean Driving = false;
-    //Class wide Variables
+
+    private BluetoothHandler _bluetoothHandler;
+
     /**
      * When the activity is first created (opened app from scratch).
      *
@@ -33,13 +30,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Register Sensor Manager
-        mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
-        //Register Sensor Manager
-        //Init the driving
-        StartTilt=0;
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),SensorManager.SENSOR_DELAY_GAME);
-        //Init the driving
 
         // temporary button to send a string
         Button btnTest = (Button)findViewById(R.id.activity_main_btnSend);
@@ -47,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if (bluetoothHandler.isConnected()) {
+                    if (_bluetoothHandler.isConnected()) {
                         final String text = "ABC123";
-                        bluetoothHandler.write(text);
+                        _bluetoothHandler.write(text);
                         showSnackbar(R.string.activity_main_snackbar_sent, text);
                     } else {
                         showSnackbar(R.string.activity_main_snackbar_notconnected);
@@ -79,27 +69,18 @@ public class MainActivity extends AppCompatActivity {
         BluetoothDevice[] devices = BluetoothHandler.getPairedDevices();
         showBluetoothSelectionDialog(devices);
     }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        //Init the driving
-        StartTilt=0;
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),SensorManager.SENSOR_DELAY_GAME);
-        //Init the driving
-    }
+
     /**
      * When the Activity is removed from view (closed app or switched to another app).
      * Forces disconnect from device.
      */
     @Override
     protected void onPause() {
-        //Kill the Driving
-        mSensorManager.unregisterListener(mSensorListener);
-        //Kill the Driving
         super.onPause();
+
         // disconnect from device before closing
-        if (bluetoothHandler != null)
-            if (bluetoothHandler.isConnected())
+        if (_bluetoothHandler != null)
+            if (_bluetoothHandler.isConnected())
                 disconnectFromDevice();
     }
 
@@ -139,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void connectToDevice(BluetoothDevice device) {
         try {
-            bluetoothHandler = BluetoothHandler.newConnection(device);
+            _bluetoothHandler = BluetoothHandler.newConnection(device);
             showSnackbar(R.string.activity_main_snackbar_connected);
         } catch (IOException ex) {
             showErrorDialog(R.string.activity_main_error_cannotconnect);
@@ -152,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void disconnectFromDevice() {
         try {
-            bluetoothHandler.disconnect();
+            _bluetoothHandler.disconnect();
         } catch (IOException ex) {
             showErrorDialog(R.string.activity_main_error_cannotdisconnect);
             Log.e("disconnectFromDevice", ex.getMessage(), ex);
@@ -182,43 +163,6 @@ public class MainActivity extends AppCompatActivity {
         alertBuilder.setMessage(errorMessage);
         alertBuilder.show();
     }
-
-
-    //Get Steering Tilt
-    private SensorManager mSensorManager;
-    private final SensorEventListener mSensorListener = new SensorEventListener() {
-        //Place Holder Arrays
-        float mRotationMatrixFromVector[] = new float[16];
-        float mRotationMatrix[] = new float[16];
-        float orientationVals[] = new float[3];
-        //Place Holder Arrays
-        public void onSensorChanged(SensorEvent se) {
-            SensorManager.getRotationMatrixFromVector(mRotationMatrixFromVector, se.values);
-            SensorManager.remapCoordinateSystem(mRotationMatrixFromVector,
-                    SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                    mRotationMatrix);
-            SensorManager.getOrientation(mRotationMatrix, orientationVals);
-            if (StartTilt == 0){
-                StartTilt = (float)Math.toDegrees(orientationVals[2]);
-            }
-
-            Tilt = ((float)Math.toDegrees(orientationVals[2]) - StartTilt)/90; //Convert to Value between -1 & 1
-            /*Figure out some sort of over tilt protection
-            if (Tilt > 1){
-                Tilt -=1;
-            }else if (Tilt < -1){
-                Tilt +=1;
-            }*/
-            //Send Tilt + Speed Value here
-            Log.d("Tilt", String.format("%.02f", Tilt));// String.format("%.02f", Tilt); <-- float to 2dp (think about required accuracy)
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            //Do nothing
-        }
-    };
-    //Get Steering Tilt
-
 
 }
 
