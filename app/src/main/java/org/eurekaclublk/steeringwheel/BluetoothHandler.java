@@ -119,20 +119,36 @@ class BluetoothHandler {
      * Send a string to the active device.
      *
      * @param text String to be sent to the device
-     * @throws IOException On failure to send
+     * @throws IOException On disconnection or write failure
      */
     void write(String text) throws IOException {
-        if (isConnected()) {
-            _socketOut.write(text);
-            _socketOut.flush();
-        }
+        _socketOut.write(text);
+        _socketOut.flush();
     }
 
+    /**
+     * Reads incoming bytes until an \r, \n or \r\n is detected.
+     *
+     * @param count Number of bytes to be read
+     * @return String received from device
+     * @throws IOException On disconnection or read failure
+     */
+    byte[] readBytes(int count) throws IOException{
+        byte[] bytes = new byte[count];
+        for (int i = 0; i < count; i++)
+            bytes[i] = (byte)_socketIn.read();
+        return bytes;
+    }
+
+    /**
+     * Returns incoming bytes as a String.
+     * Terminates at \r, \n or \r\n.
+     *
+     * @return String received from device
+     * @throws IOException On disconnection or read failure
+     */
     String readLine() throws IOException{
-        if (isConnected()) {
-            return _socketIn.readLine();
-        }
-        return "Dead.....DX";
+        return _socketIn.readLine();
     }
 
 }
