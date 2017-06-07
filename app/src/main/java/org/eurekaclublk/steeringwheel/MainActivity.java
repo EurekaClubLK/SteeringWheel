@@ -93,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements RotationSensorHan
     @Override
     protected void onStart() {
         super.onStart();
-
-        // start listening for tilt
+        // start listening for tilt - move this to after auth and asking if steering wheel is in position.
         _rotationSensorHandler = new RotationSensorHandler(this, this);
         _rotationSensorHandler.startListening();
     }
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements RotationSensorHan
      */
     @Override
     public void onTiltChanged(float tilt) {
-        lblTilt.setText(Float.toString(tilt));
+        lblTilt.setText(String.format("%.02f", tilt));
     }
 
     /**
